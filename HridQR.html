@@ -1,0 +1,2724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HridQR Pro - Advanced QR Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #dee2e6;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --gradient-1: #6366f1;
+            --gradient-2: #8b5cf6;
+            --gradient-3: #ec4899;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141f;
+            --bg-tertiary: #1e1e2f;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #818cf8;
+            --accent-hover: #6366f1;
+            --success: #34d399;
+            --danger: #f87171;
+            --warning: #fbbf24;
+            --border: #334155;
+            --shadow: rgba(0, 0, 0, 0.4);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --glass-bg: rgba(30, 41, 59, 0.25);
+            --glass-border: rgba(148, 163, 184, 0.1);
+            --gradient-1: #818cf8;
+            --gradient-2: #c084fc;
+            --gradient-3: #f472b6;
+        }
+
+        [data-theme="neon"] {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141f;
+            --bg-tertiary: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a5b4fc;
+            --accent: #00d4ff;
+            --accent-hover: #00b4d8;
+            --success: #00ff88;
+            --danger: #ff0055;
+            --warning: #ffaa00;
+            --border: #2a2a3e;
+            --shadow: rgba(0, 212, 255, 0.2);
+            --card-bg: rgba(26, 26, 46, 0.8);
+            --glass-bg: rgba(0, 212, 255, 0.1);
+            --glass-border: rgba(0, 212, 255, 0.3);
+            --gradient-1: #00d4ff;
+            --gradient-2: #0099ff;
+            --gradient-3: #8a2be2;
+        }
+
+        [data-theme="sunset"] {
+            --bg-primary: #2d1b2e;
+            --bg-secondary: #3a2540;
+            --bg-tertiary: #4a3252;
+            --text-primary: #fce4ec;
+            --text-secondary: #f48fb1;
+            --accent: #ff6b8b;
+            --accent-hover: #ff4757;
+            --success: #ff9f43;
+            --danger: #ff3838;
+            --warning: #ffcc00;
+            --border: #5a3a5a;
+            --shadow: rgba(255, 107, 139, 0.2);
+            --card-bg: rgba(58, 37, 64, 0.8);
+            --glass-bg: rgba(255, 107, 139, 0.15);
+            --glass-border: rgba(255, 107, 139, 0.25);
+            --gradient-1: #ff6b8b;
+            --gradient-2: #ff9f43;
+            --gradient-3: #ff4757;
+        }
+
+        [data-theme="forest"] {
+            --bg-primary: #1a2e1a;
+            --bg-secondary: #2a3e2a;
+            --bg-tertiary: #3a4e3a;
+            --text-primary: #e8f5e9;
+            --text-secondary: #a5d6a7;
+            --accent: #66bb6a;
+            --accent-hover: #43a047;
+            --success: #81c784;
+            --danger: #e57373;
+            --warning: #ffb74d;
+            --border: #3a4e3a;
+            --shadow: rgba(0, 0, 0, 0.4);
+            --card-bg: rgba(42, 62, 42, 0.8);
+            --glass-bg: rgba(102, 187, 106, 0.15);
+            --glass-border: rgba(102, 187, 106, 0.25);
+            --gradient-1: #66bb6a;
+            --gradient-2: #43a047;
+            --gradient-3: #2e7d32;
+        }
+
+        [data-theme="ocean"] {
+            --bg-primary: #0a1929;
+            --bg-secondary: #1a2942;
+            --bg-tertiary: #2a3f5f;
+            --text-primary: #e3f2fd;
+            --text-secondary: #90caf9;
+            --accent: #29b6f6;
+            --accent-hover: #0288d1;
+            --success: #26c6da;
+            --danger: #ef5350;
+            --warning: #ffca28;
+            --border: #2a3f5f;
+            --shadow: rgba(0, 0, 0, 0.4);
+            --card-bg: rgba(26, 41, 66, 0.8);
+            --glass-bg: rgba(41, 182, 246, 0.15);
+            --glass-border: rgba(41, 182, 246, 0.25);
+            --gradient-1: #29b6f6;
+            --gradient-2: #0288d1;
+            --gradient-3: #01579b;
+        }
+
+        /* Performance Optimizations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Hardware Acceleration */
+        .hardware-accelerated {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+
+        /* Custom Cursor - Optional */
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s, width 0.3s, height 0.3s;
+            display: none;
+        }
+
+        .cursor-ring {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0.7;
+            display: none;
+        }
+
+        body.cursor-enabled .cursor-dot,
+        body.cursor-enabled .cursor-ring {
+            display: block;
+        }
+
+        /* Particle System - Optimized */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Floating Elements - CSS Only */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            opacity: 0.1;
+            filter: blur(40px);
+            animation: float-element 20s infinite linear;
+        }
+
+        @keyframes float-element {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(100px, 100px) rotate(90deg);
+            }
+            50% {
+                transform: translate(0, 200px) rotate(180deg);
+            }
+            75% {
+                transform: translate(-100px, 100px) rotate(270deg);
+            }
+        }
+
+        /* Glitch Effect - Optimized */
+        @keyframes glitch {
+            0% {
+                clip-path: inset(40% 0 61% 0);
+                transform: translate(0);
+            }
+            20% {
+                clip-path: inset(92% 0 1% 0);
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                clip-path: inset(43% 0 1% 0);
+                transform: translate(-2px, -2px);
+            }
+            60% {
+                clip-path: inset(25% 0 58% 0);
+                transform: translate(2px, 2px);
+            }
+            80% {
+                clip-path: inset(54% 0 7% 0);
+                transform: translate(2px, -2px);
+            }
+            100% {
+                clip-path: inset(58% 0 43% 0);
+                transform: translate(0);
+            }
+        }
+
+        .glitch-text {
+            position: relative;
+            animation: glitch 5s infinite;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--gradient-2);
+            clip-path: inset(65% 0 20% 0);
+            animation: glitch 3s infinite linear alternate-reverse;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: 2px 0 var(--gradient-3);
+            clip-path: inset(10% 0 80% 0);
+            animation: glitch 4s infinite linear alternate-reverse;
+        }
+
+        body {
+            font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+            position: relative;
+            background-image: 
+                radial-gradient(circle at 20% 80%, var(--glass-bg) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, var(--glass-bg) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, var(--glass-bg) 0%, transparent 30%);
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10000;
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 5px 30px var(--shadow);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 70px;
+            right: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(40px);
+            border-radius: 20px;
+            padding: 25px;
+            z-index: 1000;
+            box-shadow: 0 20px 60px var(--shadow);
+            border: 1px solid var(--glass-border);
+            transform: translateY(-20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 300px;
+        }
+
+        .settings-panel.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-group {
+            margin-bottom: 20px;
+        }
+
+        .settings-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-tertiary);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Theme Switcher - Enhanced */
+        .theme-switcher {
+            display: flex;
+            gap: 8px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 12px;
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 40px var(--shadow),
+                0 0 0 1px var(--glass-border);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .theme-switcher:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 20px 60px var(--shadow),
+                0 0 0 1px var(--accent),
+                0 0 30px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .theme-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+        }
+
+        .theme-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .theme-btn:hover::before {
+            left: 100%;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-btn.active {
+            border-color: var(--text-primary);
+            box-shadow: 
+                0 0 0 3px var(--accent),
+                0 0 20px var(--accent),
+                inset 0 2px 10px rgba(255, 255, 255, 0.2);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 0 3px var(--accent),
+                    0 0 20px var(--accent),
+                    inset 0 2px 10px rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 0 0 5px var(--accent),
+                    0 0 40px var(--accent),
+                    inset 0 2px 20px rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        /* Nav Buttons */
+        .nav-btn {
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .container {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 30px;
+            padding: 30px;
+            padding-top: 140px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Glassmorphism Panels - Enhanced */
+        .panel {
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.15),
+                0 0 0 1px var(--glass-border),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--gradient-1),
+                var(--gradient-2),
+                var(--gradient-3),
+                transparent);
+            animation: border-glow 3s linear infinite;
+            background-size: 200% 100%;
+        }
+
+        @keyframes border-glow {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .panel:hover {
+            transform: translateY(-8px) scale(1.005);
+            box-shadow: 
+                0 40px 120px rgba(0, 0, 0, 0.25),
+                0 0 0 1px var(--accent),
+                0 0 60px rgba(var(--accent-rgb), 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+            background-size: 300% 300%;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            box-shadow: 
+                0 15px 40px rgba(var(--accent-rgb), 0.4),
+                0 0 0 2px rgba(255, 255, 255, 0.1),
+                inset 0 2px 10px rgba(255, 255, 255, 0.3);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: gradient-shift 4s ease infinite, float-logo 6s ease-in-out infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes float-logo {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+
+        .logo:hover {
+            animation: none;
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 
+                0 20px 60px rgba(var(--accent-rgb), 0.6),
+                0 0 0 4px rgba(255, 255, 255, 0.2),
+                inset 0 4px 20px rgba(255, 255, 255, 0.4);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 2px 20px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-left: 5px;
+            opacity: 0.9;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 15px;
+        }
+
+        /* Custom Scrollbar */
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-area::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            margin: 5px;
+        }
+
+        .content-area::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--gradient-1), var(--gradient-2));
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .content-area::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--gradient-2), var(--gradient-3));
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .section {
+            margin-bottom: 30px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .section:hover {
+            transform: translateX(5px);
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gradient-1), transparent);
+            border-radius: 3px;
+            transition: width 0.4s;
+        }
+
+        .section:hover .section-title::after {
+            width: 100%;
+        }
+
+        /* Input Fields - Enhanced */
+        .input-field {
+            width: 100%;
+            padding: 18px 24px;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                inset 0 2px 10px rgba(0, 0, 0, 0.1),
+                0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-primary);
+            box-shadow: 
+                0 0 0 4px rgba(var(--accent-rgb), 0.1),
+                0 10px 40px rgba(0, 0, 0, 0.1),
+                inset 0 2px 10px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.4s;
+        }
+
+        .control-group:hover {
+            transform: translateY(-5px);
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-label i {
+            font-size: 0.8rem;
+        }
+
+        select, input[type="color"] {
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.4s;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            padding-right: 50px;
+        }
+
+        input[type="color"] {
+            height: 60px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        select:focus, input[type="color"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-primary);
+            box-shadow: 
+                0 0 0 4px rgba(var(--accent-rgb), 0.1),
+                0 10px 40px rgba(0, 0, 0, 0.1);
+            transform: scale(1.02);
+        }
+
+        /* File Upload - Enhanced */
+        .file-upload {
+            display: block;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border: 3px dashed var(--border);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-secondary);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-upload i {
+            font-size: 1.5rem;
+        }
+
+        .file-upload::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            opacity: 0.1;
+        }
+
+        .file-upload:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .file-upload:hover {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+            color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Advanced Options */
+        .advanced-options {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .advanced-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .advanced-content {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .advanced-options.expanded .advanced-content {
+            display: grid;
+        }
+
+        /* Buttons - Ultra Enhanced */
+        .btn-primary {
+            width: 100%;
+            padding: 22px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+            background-size: 300% 300%;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 15px 40px rgba(var(--accent-rgb), 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 25px 60px rgba(var(--accent-rgb), 0.6),
+                0 0 0 2px rgba(255, 255, 255, 0.2),
+                inset 0 4px 0 rgba(255, 255, 255, 0.4);
+            background-position: right center;
+            animation: gradient-shift 1.5s ease infinite;
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .output-display {
+            padding: 40px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            text-align: center;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--glass-border);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                inset 0 2px 20px rgba(0, 0, 0, 0.1),
+                0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .output-display:hover {
+            transform: scale(1.02);
+            box-shadow: 
+                inset 0 2px 30px rgba(0, 0, 0, 0.15),
+                0 20px 60px rgba(0, 0, 0, 0.2),
+                0 0 0 2px var(--accent);
+        }
+
+        #qrcode {
+            margin: 30px 0;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #qrcode::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--gradient-1), var(--gradient-2), var(--gradient-3), var(--gradient-1));
+            background-size: 400% 400%;
+            border-radius: 22px;
+            z-index: -1;
+            animation: border-glow 3s linear infinite;
+        }
+
+        #qrcode:hover {
+            transform: rotate(2deg) scale(1.05);
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.3),
+                0 0 0 2px var(--accent),
+                0 0 40px rgba(var(--accent-rgb), 0.4);
+        }
+
+        #qrcode canvas {
+            border-radius: 15px;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+            transition: all 0.4s;
+        }
+
+        .btn-secondary {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            position: relative;
+            overflow: hidden;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-secondary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: 
+                0 15px 40px rgba(16, 185, 129, 0.6),
+                0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-share {
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-share:hover {
+            box-shadow: 
+                0 15px 40px rgba(99, 102, 241, 0.6),
+                0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-svg {
+            background: linear-gradient(135deg, var(--warning), #f59e0b);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        /* QR Info Display */
+        .qr-info {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-family: monospace;
+        }
+
+        /* History Section - Enhanced */
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .history-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 20px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .btn-clear {
+            padding: 14px 28px;
+            background: transparent;
+            color: var(--danger);
+            border: 2px solid var(--danger);
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-clear::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-clear:hover::before {
+            left: 100%;
+        }
+
+        .btn-clear:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 
+                0 10px 30px rgba(239, 68, 68, 0.4),
+                0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .history-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .history-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.6s;
+        }
+
+        .history-card:hover::before {
+            left: 100%;
+        }
+
+        .history-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.25),
+                0 0 0 2px var(--accent),
+                0 0 40px rgba(var(--accent-rgb), 0.3);
+            border-color: var(--accent);
+        }
+
+        .history-card img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            background: white;
+            padding: 10px;
+            transition: all 0.4s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .history-card:hover img {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .history-text {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            word-break: break-all;
+            margin-bottom: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .history-card:hover .history-text {
+            color: var(--accent);
+        }
+
+        .history-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .history-card:hover .history-badge {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(var(--accent-rgb), 0.5);
+        }
+
+        .history-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-delete {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, var(--danger), #ff3838);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.8);
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .history-card:hover .btn-delete {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .btn-delete:hover {
+            transform: scale(1.2) rotate(90deg);
+            box-shadow: 0 6px 25px rgba(239, 68, 68, 0.6);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 80px 20px;
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            animation: float-logo 4s ease-in-out infinite;
+        }
+
+        /* Toast Notification - Enhanced */
+        .toast {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            color: white;
+            padding: 20px 35px;
+            border-radius: 16px;
+            box-shadow: 
+                0 15px 40px rgba(16, 185, 129, 0.4),
+                0 0 20px rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            display: none;
+            font-weight: 600;
+            animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            transform-origin: top;
+            text-align: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-50%) translateY(-100px) scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--bg-tertiary);
+            border-top: 5px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Performance Optimizations */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Responsive Design - Enhanced */
+        @media (max-width: 1400px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .controls-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                padding-top: 140px;
+            }
+            
+            .panel {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 0.85rem;
+            }
+            
+            .logo {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .top-nav {
+                padding: 12px 15px;
+            }
+            
+            .nav-left {
+                gap: 10px;
+            }
+            
+            .brand {
+                gap: 10px;
+            }
+            
+            .theme-switcher {
+                display: none;
+            }
+            
+            .mobile-theme-switcher {
+                display: flex !important;
+                gap: 5px;
+            }
+            
+            .mobile-theme-btn {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+            }
+            
+            .history-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-secondary {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .cursor-dot,
+            .cursor-ring {
+                display: none !important;
+            }
+            
+            .nav-right {
+                gap: 6px;
+            }
+            
+            .nav-btn span {
+                display: none;
+            }
+            
+            .nav-btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .settings-panel,
+            .stats-panel {
+                top: 80px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                padding-top: 140px;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.75rem;
+            }
+            
+            .logo {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            
+            .top-nav {
+                padding: 10px 12px;
+                flex-wrap: nowrap;
+            }
+            
+            .nav-left {
+                gap: 8px;
+                flex-shrink: 1;
+                min-width: 0;
+            }
+            
+            .brand {
+                gap: 8px;
+                flex-shrink: 1;
+                min-width: 0;
+            }
+            
+            .nav-right {
+                gap: 4px;
+                flex-shrink: 0;
+            }
+            
+            .nav-btn {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+                min-width: 36px;
+            }
+            
+            .nav-btn i {
+                font-size: 0.9rem;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-primary {
+                padding: 18px;
+                font-size: 1rem;
+            }
+            
+            .settings-panel,
+            .stats-panel {
+                min-width: auto;
+                right: 10px;
+                left: 10px;
+                padding: 20px;
+                top: 75px;
+            }
+            
+            .mobile-theme-switcher {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--card-bg);
+                backdrop-filter: blur(20px);
+                padding: 8px;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px var(--shadow);
+                border: 1px solid var(--glass-border);
+                z-index: 9999;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .theme-switcher,
+            .btn-clear,
+            .btn-delete,
+            .cursor-dot,
+            .cursor-ring,
+            .cursor-trail,
+            .floating-elements,
+            .top-nav {
+                display: none !important;
+            }
+            
+            .panel {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            #qrcode {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+        }
+
+        /* Mobile Theme Switcher */
+        .mobile-theme-switcher {
+            display: none;
+            gap: 5px;
+        }
+
+        .mobile-theme-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mobile-theme-btn.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.3);
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            position: fixed;
+            top: 70px;
+            left: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(40px);
+            border-radius: 20px;
+            padding: 25px;
+            z-index: 1000;
+            box-shadow: 0 20px 60px var(--shadow);
+            border: 1px solid var(--glass-border);
+            transform: translateY(-20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 300px;
+        }
+
+        .stats-panel.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+            </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+
+    <!-- Particle Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Floating Elements -->
+    <div class="floating-elements">
+        <div class="floating-element" style="width: 300px; height: 300px; top: 10%; left: 5%;"></div>
+        <div class="floating-element" style="width: 200px; height: 200px; top: 60%; right: 10%;"></div>
+        <div class="floating-element" style="width: 250px; height: 250px; bottom: 20%; left: 20%;"></div>
+    </div>
+
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="brand">
+                <div class="logo">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div>
+                    <h1 class="glitch-text" data-text="HridQR Pro">HridQR Pro</h1>
+                    <div class="subtitle">Advanced QR Code Generator</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn" id="statsBtn">
+                <i class="fas fa-chart-bar"></i>
+                <span>Stats</span>
+            </button>
+            <button class="nav-btn" id="settingsBtn">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+            <div class="theme-switcher">
+                <button class="theme-btn active" data-theme="light" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"></button>
+                <button class="theme-btn" data-theme="dark" style="background: linear-gradient(135deg, #0a0a0f, #1e1e2f);"></button>
+                <button class="theme-btn" data-theme="neon" style="background: linear-gradient(135deg, #00d4ff, #0099ff);"></button>
+                <button class="theme-btn" data-theme="sunset" style="background: linear-gradient(135deg, #ff6b8b, #ff9f43);"></button>
+                <button class="theme-btn" data-theme="forest" style="background: linear-gradient(135deg, #66bb6a, #43a047);"></button>
+                <button class="theme-btn" data-theme="ocean" style="background: linear-gradient(135deg, #29b6f6, #0288d1);"></button>
+            </div>
+            <div class="mobile-theme-switcher">
+                <button class="mobile-theme-btn active" data-theme="light" style="background: #6366f1;"></button>
+                <button class="mobile-theme-btn" data-theme="dark" style="background: #1e1e2f;"></button>
+                <button class="mobile-theme-btn" data-theme="neon" style="background: #00d4ff;"></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <h3 class="settings-title">
+            <i class="fas fa-sliders-h"></i>
+            Settings
+        </h3>
+        <div class="settings-group">
+            <label class="settings-label">Custom Cursor</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="cursorToggle">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="settings-group">
+            <label class="settings-label">Particles Effect</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="particlesToggle" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="settings-group">
+            <label class="settings-label">Animations</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="animationsToggle" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="settings-group">
+            <label class="settings-label">Auto-save History</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="autosaveToggle" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Stats Panel -->
+    <div class="stats-panel" id="statsPanel">
+        <h3 class="settings-title">
+            <i class="fas fa-chart-pie"></i>
+            Statistics
+        </h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalQRCodes">0</div>
+                <div class="stat-label">Total QR Codes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="todayQRCodes">0</div>
+                <div class="stat-label">Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="weekQRCodes">0</div>
+                <div class="stat-label">This Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="monthQRCodes">0</div>
+                <div class="stat-label">This Month</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Panel - Controls -->
+        <div class="panel">
+            <div class="header">
+                <h2>QR Code Generator</h2>
+                <p class="subtitle">Create stunning QR codes with advanced customization options</p>
+            </div>
+            <div class="content-area">
+                <!-- Content Input -->
+                <div class="section">
+                    <div class="section-title">Content</div>
+                    <textarea id="contentInput" class="input-field" rows="4" 
+                              placeholder="Enter text, URL, or any content to encode...">https://example.com</textarea>
+                </div>
+
+                <!-- Appearance Settings -->
+                <div class="section">
+                    <div class="section-title">Appearance</div>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label class="control-label">
+                                <i class="fas fa-palette"></i>
+                                Foreground Color
+                            </label>
+                            <input type="color" id="foregroundColor" value="#000000">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">
+                                <i class="fas fa-fill-drip"></i>
+                                Background Color
+                            </label>
+                            <input type="color" id="backgroundColor" value="#ffffff">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">
+                                <i class="fas fa-square"></i>
+                                QR Style
+                            </label>
+                            <select id="qrStyle">
+                                <option value="squares">Squares</option>
+                                <option value="dots">Dots</option>
+                                <option value="rounded">Rounded</option>
+                                <option value="diamond">Diamond</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">
+                                <i class="fas fa-layer-group"></i>
+                                Error Correction
+                            </label>
+                            <select id="errorCorrection">
+                                <option value="L">Low (7%)</option>
+                                <option value="M" selected>Medium (15%)</option>
+                                <option value="Q">Quartile (25%)</option>
+                                <option value="H">High (30%)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">
+                                <i class="fas fa-expand-alt"></i>
+                                Size
+                            </label>
+                            <select id="qrSize">
+                                <option value="128">128px</option>
+                                <option value="256" selected>256px</option>
+                                <option value="512">512px</option>
+                                <option value="1024">1024px</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">
+                                <i class="fas fa-eye"></i>
+                                Eye Style
+                            </label>
+                            <select id="eyeStyle">
+                                <option value="square">Square</option>
+                                <option value="circle">Circle</option>
+                                <option value="rounded">Rounded</option>
+                                <option value="diamond">Diamond</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logo Upload -->
+                <div class="section">
+                    <div class="section-title">Logo & Branding</div>
+                    <label class="file-upload" id="logoUpload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Drag & drop logo or click to upload</span>
+                        <small>Recommended: 80x80px PNG with transparent background</small>
+                    </label>
+                    <input type="file" id="logoInput" accept="image/*" style="display: none;">
+                    <div class="control-group" style="margin-top: 15px;">
+                        <label class="control-label">
+                            <i class="fas fa-crop-alt"></i>
+                            Logo Size
+                        </label>
+                        <select id="logoSize">
+                            <option value="0.2">Small (20%)</option>
+                            <option value="0.25" selected>Medium (25%)</option>
+                            <option value="0.3">Large (30%)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Advanced Options -->
+                <div class="section">
+                    <div class="advanced-options" id="advancedOptions">
+                        <div class="advanced-header" onclick="toggleAdvanced()">
+                            <div class="section-title">Advanced Options</div>
+                            <i class="fas fa-chevron-down" id="advancedIcon"></i>
+                        </div>
+                        <div class="advanced-content" id="advancedContent">
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <i class="fas fa-margin"></i>
+                                    Quiet Zone
+                                </label>
+                                <select id="quietZone">
+                                    <option value="1">1 module</option>
+                                    <option value="2" selected>2 modules</option>
+                                    <option value="3">3 modules</option>
+                                    <option value="4">4 modules</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <i class="fas fa-border-style"></i>
+                                    Border Radius
+                                </label>
+                                <select id="borderRadius">
+                                    <option value="0">0px</option>
+                                    <option value="5">5px</option>
+                                    <option value="10" selected>10px</option>
+                                    <option value="15">15px</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <i class="fas fa-adjust"></i>
+                                    Gradient Type
+                                </label>
+                                <select id="gradientType">
+                                    <option value="none">None</option>
+                                    <option value="linear">Linear</option>
+                                    <option value="radial">Radial</option>
+                                    <option value="conic">Conic</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <button class="btn-primary" id="generateBtn">
+                    <i class="fas fa-bolt"></i>
+                    Generate QR Code
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Panel - Output & History -->
+        <div class="panel">
+            <div class="header">
+                <h2>Preview & History</h2>
+                <p class="subtitle">Your generated QR codes will appear here</p>
+            </div>
+            <div class="content-area">
+                <!-- Output Display -->
+                <div class="output-display" id="outputDisplay">
+                    <div class="spinner" id="loadingSpinner"></div>
+                    <div id="qrcode"></div>
+                    <div id="qrInfo" class="qr-info" style="display: none;">
+                        <div class="info-item">
+                            <span class="info-label">Type:</span>
+                            <span class="info-value" id="qrType">URL</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Size:</span>
+                            <span class="info-value" id="qrSizeInfo">256x256px</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Error Correction:</span>
+                            <span class="info-value" id="qrErrorCorrection">Medium (15%)</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Generated:</span>
+                            <span class="info-value" id="qrTimestamp">Just now</span>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn-secondary" id="downloadPNG">
+                            <i class="fas fa-download"></i>
+                            PNG
+                        </button>
+                        <button class="btn-secondary btn-svg" id="downloadSVG">
+                            <i class="fas fa-download"></i>
+                            SVG
+                        </button>
+                        <button class="btn-secondary btn-share" id="shareBtn">
+                            <i class="fas fa-share-alt"></i>
+                            Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- History Section -->
+                <div class="section" style="margin-top: 40px;">
+                    <div class="history-header">
+                        <h3 class="history-title">Recent QR Codes</h3>
+                        <button class="btn-clear" id="clearHistoryBtn">
+                            <i class="fas fa-trash"></i>
+                            Clear All
+                        </button>
+                    </div>
+                    <div class="history-grid" id="historyGrid">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <p>No QR codes generated yet</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Your generated QR codes will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Initialize variables
+        let qrCode = null;
+        let currentQRData = null;
+        let history = JSON.parse(localStorage.getItem('hridqr_history')) || [];
+        let settings = JSON.parse(localStorage.getItem('hridqr_settings')) || {
+            cursorEnabled: false,
+            particlesEnabled: true,
+            animationsEnabled: true,
+            autosaveEnabled: true,
+            theme: 'light'
+        };
+
+        // DOM Elements
+        const elements = {
+            // Inputs
+            contentInput: document.getElementById('contentInput'),
+            foregroundColor: document.getElementById('foregroundColor'),
+            backgroundColor: document.getElementById('backgroundColor'),
+            qrStyle: document.getElementById('qrStyle'),
+            errorCorrection: document.getElementById('errorCorrection'),
+            qrSize: document.getElementById('qrSize'),
+            eyeStyle: document.getElementById('eyeStyle'),
+            logoInput: document.getElementById('logoInput'),
+            logoSize: document.getElementById('logoSize'),
+            quietZone: document.getElementById('quietZone'),
+            borderRadius: document.getElementById('borderRadius'),
+            gradientType: document.getElementById('gradientType'),
+            
+            // Buttons
+            generateBtn: document.getElementById('generateBtn'),
+            downloadPNG: document.getElementById('downloadPNG'),
+            downloadSVG: document.getElementById('downloadSVG'),
+            shareBtn: document.getElementById('shareBtn'),
+            clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+            settingsBtn: document.getElementById('settingsBtn'),
+            statsBtn: document.getElementById('statsBtn'),
+            
+            // Panels
+            settingsPanel: document.getElementById('settingsPanel'),
+            statsPanel: document.getElementById('statsPanel'),
+            
+            // Toggles
+            cursorToggle: document.getElementById('cursorToggle'),
+            particlesToggle: document.getElementById('particlesToggle'),
+            animationsToggle: document.getElementById('animationsToggle'),
+            autosaveToggle: document.getElementById('autosaveToggle'),
+            
+            // Display
+            outputDisplay: document.getElementById('outputDisplay'),
+            qrcodeContainer: document.getElementById('qrcode'),
+            loadingSpinner: document.getElementById('loadingSpinner'),
+            qrInfo: document.getElementById('qrInfo'),
+            qrType: document.getElementById('qrType'),
+            qrSizeInfo: document.getElementById('qrSizeInfo'),
+            qrErrorCorrection: document.getElementById('qrErrorCorrection'),
+            qrTimestamp: document.getElementById('qrTimestamp'),
+            
+            // History
+            historyGrid: document.getElementById('historyGrid'),
+            
+            // Stats
+            totalQRCodes: document.getElementById('totalQRCodes'),
+            todayQRCodes: document.getElementById('todayQRCodes'),
+            weekQRCodes: document.getElementById('weekQRCodes'),
+            monthQRCodes: document.getElementById('monthQRCodes'),
+            
+            // Theme
+            themeButtons: document.querySelectorAll('.theme-btn'),
+            mobileThemeButtons: document.querySelectorAll('.mobile-theme-btn'),
+            
+            // Toast
+            toast: document.getElementById('toast'),
+            
+            // File Upload
+            logoUpload: document.getElementById('logoUpload'),
+            
+            // Advanced
+            advancedOptions: document.getElementById('advancedOptions'),
+            advancedContent: document.getElementById('advancedContent'),
+            advancedIcon: document.getElementById('advancedIcon')
+        };
+
+        // Initialize application
+        function init() {
+            // Load settings
+            loadSettings();
+            
+            // Initialize theme
+            setTheme(settings.theme);
+            
+            // Load history
+            loadHistory();
+            
+            // Update stats
+            updateStats();
+            
+            // Generate initial QR code
+            generateQRCode();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Initialize particles if enabled
+            if (settings.particlesEnabled) {
+                initParticles();
+            }
+            
+            // Initialize cursor if enabled
+            if (settings.cursorEnabled) {
+                initCustomCursor();
+            }
+        }
+
+        // Load settings from localStorage
+        function loadSettings() {
+            elements.cursorToggle.checked = settings.cursorEnabled;
+            elements.particlesToggle.checked = settings.particlesEnabled;
+            elements.animationsToggle.checked = settings.animationsEnabled;
+            elements.autosaveToggle.checked = settings.autosaveEnabled;
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            settings.cursorEnabled = elements.cursorToggle.checked;
+            settings.particlesEnabled = elements.particlesToggle.checked;
+            settings.animationsEnabled = elements.animationsToggle.checked;
+            settings.autosaveEnabled = elements.autosaveToggle.checked;
+            localStorage.setItem('hridqr_settings', JSON.stringify(settings));
+        }
+
+        // Set theme
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            settings.theme = theme;
+            localStorage.setItem('hridqr_settings', JSON.stringify(settings));
+            
+            // Update active theme buttons
+            elements.themeButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+            elements.mobileThemeButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+        }
+
+        // Generate QR Code
+        function generateQRCode() {
+            const content = elements.contentInput.value.trim();
+            if (!content) {
+                showToast('Please enter content to encode', 'warning');
+                return;
+            }
+
+            // Show loading
+            elements.loadingSpinner.style.display = 'block';
+            elements.qrcodeContainer.innerHTML = '';
+
+            // Determine QR type
+            const qrType = detectContentType(content);
+            elements.qrType.textContent = qrType;
+
+            // Get settings
+            const size = parseInt(elements.qrSize.value);
+            const fgColor = elements.foregroundColor.value;
+            const bgColor = elements.backgroundColor.value;
+            const errorLevel = elements.errorCorrection.value;
+
+            // Clear previous QR code
+            if (qrCode) {
+                qrCode.clear();
+            }
+
+            // Create new QR code
+            setTimeout(() => {
+                qrCode = new QRCode(elements.qrcodeContainer, {
+                    text: content,
+                    width: size,
+                    height: size,
+                    colorDark: fgColor,
+                    colorLight: bgColor,
+                    correctLevel: QRCode.CorrectLevel[errorLevel]
+                });
+
+                // Hide loading
+                elements.loadingSpinner.style.display = 'none';
+
+                // Store current QR data
+                currentQRData = {
+                    content,
+                    size,
+                    fgColor,
+                    bgColor,
+                    errorLevel,
+                    type: qrType,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Update info display
+                updateQRInfo();
+                
+                // Show info panel
+                elements.qrInfo.style.display = 'block';
+                
+                // Save to history if autosave is enabled
+                if (settings.autosaveEnabled) {
+                    saveToHistory();
+                }
+                
+                // Update stats
+                updateStats();
+                
+                showToast('QR Code generated successfully!', 'success');
+            }, 100);
+        }
+
+        // Detect content type
+        function detectContentType(content) {
+            if (content.startsWith('http://') || content.startsWith('https://')) {
+                return 'URL';
+            } else if (content.includes('@') && content.includes('.')) {
+                return 'Email';
+            } else if (content.replace(/\D/g, '').length >= 10) {
+                return 'Phone';
+            } else if (content.length <= 50) {
+                return 'Text';
+            } else {
+                return 'Data';
+            }
+        }
+
+        // Update QR info display
+        function updateQRInfo() {
+            if (!currentQRData) return;
+            
+            elements.qrSizeInfo.textContent = `${currentQRData.size}x${currentQRData.size}px`;
+            
+            const errorLevels = {
+                'L': 'Low (7%)',
+                'M': 'Medium (15%)',
+                'Q': 'Quartile (25%)',
+                'H': 'High (30%)'
+            };
+            elements.qrErrorCorrection.textContent = errorLevels[currentQRData.errorLevel];
+            
+            const now = new Date();
+            elements.qrTimestamp.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Save to history
+        function saveToHistory() {
+            if (!currentQRData) return;
+            
+            const historyItem = {
+                ...currentQRData,
+                id: Date.now(),
+                preview: elements.qrcodeContainer.querySelector('canvas').toDataURL('image/png')
+            };
+            
+            history.unshift(historyItem);
+            if (history.length > 50) {
+                history = history.slice(0, 50);
+            }
+            
+            localStorage.setItem('hridqr_history', JSON.stringify(history));
+            loadHistory();
+        }
+
+        // Load history from localStorage
+        function loadHistory() {
+            if (history.length === 0) {
+                elements.historyGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <p>No QR codes generated yet</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">Your generated QR codes will appear here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            elements.historyGrid.innerHTML = history.map(item => `
+                <div class="history-card" data-id="${item.id}">
+                    <img src="${item.preview}" alt="QR Code">
+                    <div class="history-badge">${item.type}</div>
+                    <div class="history-text">${item.content.length > 30 ? item.content.substring(0, 30) + '...' : item.content}</div>
+                    <div class="history-time">${new Date(item.timestamp).toLocaleDateString()}</div>
+                    <button class="btn-delete" onclick="deleteHistoryItem(${item.id})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Delete history item
+        function deleteHistoryItem(id) {
+            history = history.filter(item => item.id !== id);
+            localStorage.setItem('hridqr_history', JSON.stringify(history));
+            loadHistory();
+            updateStats();
+            showToast('Item deleted from history', 'success');
+        }
+
+        // Clear all history
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all history?')) {
+                history = [];
+                localStorage.removeItem('hridqr_history');
+                loadHistory();
+                updateStats();
+                showToast('History cleared', 'success');
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const today = new Date().toDateString();
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+            
+            const todayCount = history.filter(item => 
+                new Date(item.timestamp).toDateString() === today
+            ).length;
+            
+            const weekCount = history.filter(item => 
+                new Date(item.timestamp) >= weekAgo
+            ).length;
+            
+            const monthCount = history.filter(item => 
+                new Date(item.timestamp) >= monthAgo
+            ).length;
+            
+            elements.totalQRCodes.textContent = history.length;
+            elements.todayQRCodes.textContent = todayCount;
+            elements.weekQRCodes.textContent = weekCount;
+            elements.monthQRCodes.textContent = monthCount;
+        }
+
+        // Download QR as PNG
+        function downloadPNG() {
+            if (!currentQRData) {
+                showToast('Please generate a QR code first', 'warning');
+                return;
+            }
+            
+            const canvas = elements.qrcodeContainer.querySelector('canvas');
+            if (!canvas) return;
+            
+            const link = document.createElement('a');
+            link.download = `qr-code-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('QR Code downloaded as PNG', 'success');
+        }
+
+        // Share QR code
+        async function shareQR() {
+            if (!currentQRData) {
+                showToast('Please generate a QR code first', 'warning');
+                return;
+            }
+
+            if (navigator.share) {
+                try {
+                    const canvas = elements.qrcodeContainer.querySelector('canvas');
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve));
+                    const file = new File([blob], 'qr-code.png', { type: 'image/png' });
+                    
+                    await navigator.share({
+                        title: 'QR Code',
+                        text: 'Check out this QR code I created with HridQR Pro!',
+                        files: [file]
+                    });
+                    showToast('QR Code shared successfully!', 'success');
+                } catch (err) {
+                    console.log('Share cancelled:', err);
+                }
+            } else {
+                // Fallback: copy to clipboard
+                const canvas = elements.qrcodeContainer.querySelector('canvas');
+                canvas.toBlob(blob => {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    navigator.clipboard.write([item]).then(() => {
+                        showToast('QR Code copied to clipboard!', 'success');
+                    });
+                });
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toast = elements.toast;
+            toast.textContent = message;
+            toast.style.background = type === 'success' ? 
+                'linear-gradient(135deg, var(--success), var(--accent))' :
+                'linear-gradient(135deg, var(--warning), #f59e0b)';
+            
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Toggle advanced options
+        function toggleAdvanced() {
+            elements.advancedOptions.classList.toggle('expanded');
+            elements.advancedIcon.classList.toggle('fa-chevron-down');
+            elements.advancedIcon.classList.toggle('fa-chevron-up');
+        }
+
+        // Initialize particles
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Particle system
+            const particles = [];
+            const particleCount = Math.min(100, Math.floor(window.innerWidth / 10));
+            
+            // Create particles
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 3 + 1,
+                    speedX: Math.random() * 0.5 - 0.25,
+                    speedY: Math.random() * 0.5 - 0.25,
+                    color: `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100 + 155)}, 255, 0.5)`
+                });
+            }
+            
+            // Animation loop
+            function animateParticles() {
+                if (!settings.particlesEnabled) return;
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Update and draw particles
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    
+                    // Bounce off edges
+                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                    
+                    // Draw particle
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    
+                    // Draw connections
+                    particles.forEach(p2 => {
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(100, 100, 255, ${0.2 * (1 - distance/100)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    });
+                });
+                
+                requestAnimationFrame(animateParticles);
+            }
+            
+            animateParticles();
+        }
+
+        // Initialize custom cursor
+        function initCustomCursor() {
+            if (!settings.cursorEnabled) {
+                document.body.classList.remove('cursor-enabled');
+                return;
+            }
+            
+            document.body.classList.add('cursor-enabled');
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorRing = document.querySelector('.cursor-ring');
+            
+            let mouseX = 0;
+            let mouseY = 0;
+            let ringX = 0;
+            let ringY = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursorDot.style.left = mouseX + 'px';
+                cursorDot.style.top = mouseY + 'px';
+            });
+            
+            function animateCursor() {
+                // Smooth ring movement
+                ringX += (mouseX - ringX) * 0.1;
+                ringY += (mouseY - ringY) * 0.1;
+                
+                cursorRing.style.left = ringX + 'px';
+                cursorRing.style.top = ringY + 'px';
+                
+                requestAnimationFrame(animateCursor);
+            }
+            
+            animateCursor();
+            
+            // Interactive elements
+            const interactiveElements = document.querySelectorAll('button, input, select, .history-card, .file-upload');
+            
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorDot.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                    cursorRing.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                });
+                
+                el.addEventListener('mouseleave', () => {
+                    cursorDot.style.transform = 'translate(-50%, -50%) scale(1)';
+                    cursorRing.style.transform = 'translate(-50%, -50%) scale(1)';
+                });
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Generate button
+            elements.generateBtn.addEventListener('click', generateQRCode);
+            
+            // Download buttons
+            elements.downloadPNG.addEventListener('click', downloadPNG);
+            elements.shareBtn.addEventListener('click', shareQR);
+            
+            // History buttons
+            elements.clearHistoryBtn.addEventListener('click', clearHistory);
+            
+            // Settings panel
+            elements.settingsBtn.addEventListener('click', () => {
+                elements.settingsPanel.classList.toggle('active');
+                elements.statsPanel.classList.remove('active');
+            });
+            
+            elements.statsBtn.addEventListener('click', () => {
+                elements.statsPanel.classList.toggle('active');
+                elements.settingsPanel.classList.remove('active');
+            });
+            
+            // Close panels when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!elements.settingsPanel.contains(e.target) && !elements.settingsBtn.contains(e.target)) {
+                    elements.settingsPanel.classList.remove('active');
+                }
+                if (!elements.statsPanel.contains(e.target) && !elements.statsBtn.contains(e.target)) {
+                    elements.statsPanel.classList.remove('active');
+                }
+            });
+            
+            // Settings toggles
+            elements.cursorToggle.addEventListener('change', () => {
+                saveSettings();
+                initCustomCursor();
+            });
+            
+            elements.particlesToggle.addEventListener('change', () => {
+                saveSettings();
+                if (settings.particlesEnabled) {
+                    initParticles();
+                }
+            });
+            
+            elements.animationsToggle.addEventListener('change', saveSettings);
+            elements.autosaveToggle.addEventListener('change', saveSettings);
+            
+            // Theme switcher
+            elements.themeButtons.forEach(btn => {
+                btn.addEventListener('click', () => setTheme(btn.dataset.theme));
+            });
+            
+            elements.mobileThemeButtons.forEach(btn => {
+                btn.addEventListener('click', () => setTheme(btn.dataset.theme));
+            });
+            
+            // File upload
+            elements.logoUpload.addEventListener('click', () => elements.logoInput.click());
+            elements.logoInput.addEventListener('change', handleLogoUpload);
+            
+            // Real-time updates for some inputs
+            elements.contentInput.addEventListener('input', debounce(generateQRCode, 500));
+            elements.foregroundColor.addEventListener('input', debounce(generateQRCode, 300));
+            elements.backgroundColor.addEventListener('input', debounce(generateQRCode, 300));
+            elements.qrSize.addEventListener('change', generateQRCode);
+            elements.errorCorrection.addEventListener('change', generateQRCode);
+        }
+
+        // Handle logo upload
+        function handleLogoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                showToast('Please upload an image file', 'warning');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // Add logo to QR code
+                const logo = new Image();
+                logo.src = event.target.result;
+                logo.onload = function() {
+                    // You would implement logo overlay here
+                    // This requires a more complex QR code library with logo support
+                    showToast('Logo uploaded successfully!', 'success');
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Utility function: debounce
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
