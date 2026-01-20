@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Daily</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066ff;
+            --primary-glow: rgba(0, 102, 255, 0.3);
+            --secondary: #00d4ff;
+            --accent: #ff3366;
+            --accent-glow: rgba(255, 51, 102, 0.3);
+            --dark: #0a0a14;
+            --dark-card: #151522;
+            --light: #ffffff;
+            --gray: #8a8aa3;
+            --gray-dark: #5a5a7a;
+            --success: #00ff88;
+            --warning: #ffcc00;
+            --neon-glow: 0 0 20px var(--primary-glow);
+            --neon-accent: 0 0 20px var(--accent-glow);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a14 0%, #151530 50%, #0a0a14 100%);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            touch-action: manipulation;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s, width 0.3s, height 0.3s;
+            filter: drop-shadow(0 0 8px currentColor);
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-glow);
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.6s cubic-bezier(0.215, 0.610, 0.355, 1);
+            filter: blur(2px);
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        /* Cursor Hide on Touch Devices */
+        @media (hover: none) and (pointer: coarse) {
+            .cursor, .cursor-follower {
+                display: none;
+            }
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            filter: blur(0.5px);
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Grid Lines */
+        .grid-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px 25px;
+            background: linear-gradient(135deg, 
+                rgba(21, 21, 34, 0.9) 0%, 
+                rgba(10, 10, 20, 0.95) 100%);
+            backdrop-filter: blur(30px) saturate(180%);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                var(--neon-glow),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: slideDown 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: rotate 20s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 18px;
+            filter: blur(10px);
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .logo-text h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+
+        .logo-text p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .current-date-display {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .current-date-display .date {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .current-date-display .live-time {
+            font-size: 1rem;
+            color: var(--secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            opacity: 0.9;
+        }
+
+        .live-time i {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 25px;
+            margin-bottom: 40px;
+            align-items: start;
+        }
+
+        /* Calendar Container */
+        .calendar-container {
+            background: linear-gradient(135deg, 
+                rgba(21, 21, 34, 0.9) 0%, 
+                rgba(15, 15, 25, 0.95) 100%);
+            backdrop-filter: blur(30px) saturate(180%);
+            border-radius: 25px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                var(--neon-glow),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: slideInLeft 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+        }
+
+        .calendar-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(0, 102, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .selected-date-box {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .selected-day {
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .selected-month {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--light);
+            margin-bottom: 5px;
+        }
+
+        .selected-year {
+            font-size: 1.4rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .date-info {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.08) 0%, 
+                rgba(255, 255, 255, 0.05) 100%);
+            padding: 20px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .date-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .date-info-item:hover {
+            transform: translateX(8px);
+            border-bottom-color: var(--primary);
+        }
+
+        .date-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .date-info-label {
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .date-info-label i {
+            color: var(--primary);
+            font-size: 1rem;
+            width: 24px;
+            flex-shrink: 0;
+        }
+
+        .date-info-value {
+            color: var(--light);
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .bangla-value {
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--secondary);
+            font-weight: 800;
+        }
+
+        /* Holidays Sidebar */
+        .holidays-sidebar {
+            background: linear-gradient(135deg, 
+                rgba(21, 21, 34, 0.9) 0%, 
+                rgba(15, 15, 25, 0.95) 100%);
+            backdrop-filter: blur(30px) saturate(180%);
+            border-radius: 25px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                var(--neon-accent),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: slideInRight 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+            height: fit-content;
+            max-height: 750px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) rgba(255, 255, 255, 0.05);
+        }
+
+        .holidays-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .holidays-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .holidays-sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            border-radius: 10px;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .holidays-sidebar h2 {
+            font-size: 1.6rem;
+            color: var(--light);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 51, 102, 0.3);
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, 
+                rgba(21, 21, 34, 0.95) 0%, 
+                rgba(15, 15, 25, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            z-index: 2;
+        }
+
+        .holidays-sidebar h2 i {
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+        }
+
+        .holidays-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .holiday-item {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.08) 0%, 
+                rgba(255, 255, 255, 0.05) 100%);
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holiday-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+        }
+
+        .holiday-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 15px 30px rgba(255, 51, 102, 0.2);
+            border-color: var(--accent);
+        }
+
+        .holiday-date {
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            min-width: 110px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(255, 51, 102, 0.2);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .holiday-name {
+            font-weight: 700;
+            color: var(--light);
+            flex: 1;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Calendar */
+        .calendar {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 18px;
+            margin-top: 30px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .month-year {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            line-height: 1;
+        }
+
+        .month-year::before {
+            content: '';
+            width: 6px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            box-shadow: 0 0 20px var(--primary-glow);
+            flex-shrink: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .nav-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px var(--primary-glow);
+        }
+
+        .today-btn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .today-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .today-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .today-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        /* Weekdays */
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .weekday {
+            text-align: center;
+            padding: 16px 8px;
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .weekday:hover {
+            background: rgba(0, 102, 255, 0.2);
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        /* Calendar Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day {
+            min-height: 70px;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.03) 100%);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            border: 2px solid transparent;
+            overflow: hidden;
+            padding: 8px;
+        }
+
+        .day::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .day:hover::before {
+            opacity: 1;
+        }
+
+        .day:hover {
+            transform: translateY(-8px) scale(1.08);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 30px var(--primary-glow);
+            border-color: var(--primary);
+            z-index: 2;
+        }
+
+        .day.current-month {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.08) 100%);
+        }
+
+        .day.other-month {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.02) 0%, 
+                rgba(255, 255, 255, 0.01) 100%);
+            color: var(--gray-dark);
+        }
+
+        .day.today {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            animation: glow 2s infinite;
+            border: none;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px var(--primary-glow); }
+            50% { box-shadow: 0 0 40px var(--primary-glow); }
+        }
+
+        .day.today .date-number {
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .day.today .bangla-date {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .day.holiday {
+            background: linear-gradient(135deg, 
+                rgba(255, 51, 102, 0.2) 0%, 
+                rgba(255, 107, 157, 0.2) 100%);
+            border: 2px solid rgba(255, 51, 102, 0.3);
+        }
+
+        .day.holiday .date-number {
+            color: var(--accent);
+        }
+
+        .day.selected {
+            border: 3px solid var(--accent);
+            box-shadow: 
+                0 0 0 4px rgba(255, 51, 102, 0.1),
+                0 20px 40px rgba(255, 51, 102, 0.3);
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            30% { transform: scale(1.15); }
+            60% { transform: scale(0.95); }
+        }
+
+        .date-number {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 4px;
+            color: var(--light);
+            position: relative;
+            z-index: 1;
+        }
+
+        .bangla-date {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .holiday-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 6px;
+            height: 6px;
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            border-radius: 50%;
+            z-index: 1;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.9;
+        }
+
+        .footer p:first-child {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .heart {
+            color: var(--accent);
+            display: inline-block;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.05); }
+        }
+
+        /* Performance Optimizations */
+        .will-change {
+            will-change: transform, opacity;
+        }
+
+        /* Reduce motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* =========== MOBILE RESPONSIVE FIXES =========== */
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .holidays-sidebar {
+                max-height: none;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .calendar-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .month-year::before {
+                display: none;
+            }
+            
+            .nav-buttons {
+                justify-content: center;
+            }
+            
+            .holiday-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            
+            .holiday-date {
+                min-width: 100%;
+                width: 100%;
+            }
+            
+            .calendar-grid {
+                gap: 6px;
+            }
+            
+            .weekday {
+                padding: 12px 6px;
+                font-size: 0.9rem;
+            }
+            
+            .day {
+                min-height: 60px;
+                padding: 6px;
+            }
+            
+            .date-number {
+                font-size: 1.4rem;
+                margin-bottom: 3px;
+            }
+            
+            .bangla-date {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .calendar-container, .holidays-sidebar {
+                padding: 20px;
+            }
+            
+            .selected-day {
+                font-size: 4rem;
+            }
+            
+            .selected-month {
+                font-size: 1.6rem;
+            }
+            
+            .month-year {
+                font-size: 1.6rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+            
+            .today-btn {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* MOBILE-FIRST CALENDAR FIX */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .logo {
+                flex-direction: row;
+                text-align: center;
+                gap: 15px;
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .logo-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .logo-icon i {
+                font-size: 1.5rem;
+            }
+            
+            .logo-text h1 {
+                font-size: 1.8rem;
+            }
+            
+            .current-date-display .date {
+                font-size: 1.5rem;
+            }
+            
+            .current-date-display .live-time {
+                font-size: 0.9rem;
+            }
+            
+            .calendar-grid {
+                gap: 4px;
+            }
+            
+            .weekdays {
+                gap: 4px;
+            }
+            
+            .weekday {
+                padding: 10px 2px;
+                font-size: 0.8rem;
+                border-radius: 8px;
+            }
+            
+            .day {
+                min-height: 50px;
+                padding: 4px;
+                border-radius: 8px;
+            }
+            
+            .date-number {
+                font-size: 1.2rem;
+                margin-bottom: 2px;
+            }
+            
+            .bangla-date {
+                font-size: 0.7rem;
+            }
+            
+            .holiday-indicator {
+                top: 4px;
+                right: 4px;
+                width: 5px;
+                height: 5px;
+            }
+            
+            .date-info-item {
+                padding: 10px 0;
+            }
+            
+            .date-info-label {
+                font-size: 0.8rem;
+            }
+            
+            .date-info-value {
+                font-size: 0.9rem;
+            }
+            
+            .holiday-date {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .holiday-name {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* EXTRA SMALL DEVICES */
+        @media (max-width: 400px) {
+            .calendar-grid {
+                gap: 3px;
+            }
+            
+            .day {
+                min-height: 45px;
+                padding: 3px;
+            }
+            
+            .date-number {
+                font-size: 1rem;
+            }
+            
+            .bangla-date {
+                font-size: 0.65rem;
+            }
+            
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .today-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .day:hover {
+                transform: none;
+            }
+            
+            .nav-btn:hover, .today-btn:hover {
+                transform: none;
+            }
+            
+            .date-info-item:hover {
+                transform: none;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .cursor,
+            .cursor-follower,
+            .animated-bg,
+            .grid-lines {
+                display: none !important;
+            }
+            
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            
+            .header,
+            .calendar-container,
+            .holidays-sidebar {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                background: white !important;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    
+    <!-- Animated Background -->
+    <div class="animated-bg" id="animatedBg"></div>
+    <div class="grid-lines"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header will-change">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Daily</h1>
+                    <p>2026 Calendar</p>
+                </div>
+            </div>
+            <div class="current-date-display">
+                <div class="date" id="currentDate">January 20, 2026</div>
+                <div class="live-time" id="liveTime">
+                    <i class="fas fa-clock"></i>
+                    <span>Loading time...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content - Calendar Left, Holidays Right -->
+        <div class="main-layout">
+            <!-- Calendar Container (Left) -->
+            <div class="calendar-container will-change">
+                <div class="selected-date-box">
+                    <div class="selected-day" id="selectedDay">20</div>
+                    <div class="selected-month" id="selectedMonth">January</div>
+                    <div class="selected-year" id="selectedYear">2026</div>
+                    
+                    <div class="date-info">
+                        <div class="date-info-item">
+                            <span class="date-info-label">
+                                <i class="fas fa-calendar-day"></i> Day of Week
+                            </span>
+                            <span class="date-info-value" id="dayOfWeek">Tuesday</span>
+                        </div>
+                        <div class="date-info-item">
+                            <span class="date-info-label">
+                                <i class="fas fa-calendar-week"></i> Week Number
+                            </span>
+                            <span class="date-info-value" id="weekNumber">4</span>
+                        </div>
+                        <div class="date-info-item">
+                            <span class="date-info-label">
+                                <i class="fas fa-calendar-alt"></i> Days in Month
+                            </span>
+                            <span class="date-info-value" id="daysInMonth">31</span>
+                        </div>
+                        <div class="date-info-item">
+                            <span class="date-info-label">
+                                <i class="fas fa-language"></i> Bengali Date
+                            </span>
+                            <span class="date-info-value bangla-value" id="banglaDate">৬ মাঘ ১৪৩২</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar -->
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <div class="month-year" id="monthYear">January 2026</div>
+                        <div class="nav-buttons">
+                            <button class="nav-btn" id="prevMonth">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="today-btn" id="todayBtn">
+                                <i class="fas fa-bolt"></i> Today
+                            </button>
+                            <button class="nav-btn" id="nextMonth">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="weekdays">
+                        <div class="weekday">Sun</div>
+                        <div class="weekday">Mon</div>
+                        <div class="weekday">Tue</div>
+                        <div class="weekday">Wed</div>
+                        <div class="weekday">Thu</div>
+                        <div class="weekday">Fri</div>
+                        <div class="weekday">Sat</div>
+                    </div>
+
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar days will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Holidays Sidebar (Right) -->
+            <aside class="holidays-sidebar will-change">
+                <h2><i class="fas fa-fire"></i> Public Holidays 2026</h2>
+                <div class="holidays-list" id="holidaysList">
+                    <!-- Holidays will be populated by JavaScript -->
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 Daily. All rights reserved.</p>
+            <p>Crafted with <span class="heart">❤️</span> Hridoy</p>
+        </footer>
+    </div>
+
+    <script>
+        // Today's date - January 20, 2026
+        let currentDate = new Date(2026, 0, 20);
+        let selectedDate = new Date(currentDate);
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        // Public holidays for Bangladesh 2026
+        const holidays2026 = [
+            { date: "2026-02-21", name: "Shaheed Day & International Mother Language Day" },
+            { date: "2026-03-26", name: "Independence Day" },
+            { date: "2026-04-14", name: "Bengali New Year (Pohela Boishakh)" },
+            { date: "2026-05-01", name: "May Day (International Workers' Day)" },
+            { date: "2026-08-05", name: "National Mourning Day" },
+            { date: "2026-12-16", name: "Victory Day" },
+            { date: "2026-12-25", name: "Christmas Day" }
+        ];
+
+        // Optimized particle system
+        function createParticles() {
+            const bg = document.getElementById('animatedBg');
+            const particleCount = Math.min(60, Math.floor(window.innerWidth / 20));
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle will-change';
+                
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.transform = `translateY(${Math.random() * 100}vh)`;
+                
+                const size = Math.random() * 1.5 + 1;
+                particle.style.width = particle.style.height = `${size}px`;
+                
+                const colors = ['#0066ff', '#00d4ff', '#ff3366', '#00ff88'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                const duration = Math.random() * 15 + 10;
+                const delay = Math.random() * 15;
+                particle.style.animation = `float ${duration}s infinite linear ${delay}s`;
+                
+                bg.appendChild(particle);
+            }
+        }
+
+        // Enhanced cursor system with performance optimizations
+        function initCursor() {
+            const cursor = document.querySelector('.cursor');
+            const follower = document.querySelector('.cursor-follower');
+            
+            if (!cursor || !follower) return;
+            
+            let mouseX = 0;
+            let mouseY = 0;
+            let cursorX = 0;
+            let cursorY = 0;
+            let followerX = 0;
+            let followerY = 0;
+            
+            function animateCursor() {
+                cursorX += (mouseX - cursorX) * 0.2;
+                cursorY += (mouseY - cursorY) * 0.2;
+                
+                followerX += (mouseX - followerX) * 0.1;
+                followerY += (mouseY - followerY) * 0.1;
+                
+                cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+                follower.style.transform = `translate(${followerX}px, ${followerY}px)`;
+                
+                requestAnimationFrame(animateCursor);
+            }
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            document.addEventListener('mouseover', (e) => {
+                const target = e.target;
+                if (target.closest('button, .day, .holiday-item, .date-info-item')) {
+                    cursor.style.transform = `translate(${mouseX}px, ${mouseY}px) scale(1.5)`;
+                    cursor.style.background = 'var(--accent)';
+                    follower.style.transform = `translate(${mouseX}px, ${mouseY}px) scale(1.5)`;
+                    follower.style.borderColor = 'var(--accent-glow)';
+                }
+            });
+            
+            document.addEventListener('mouseout', (e) => {
+                const target = e.target;
+                if (target.closest('button, .day, .holiday-item, .date-info-item')) {
+                    cursor.style.transform = `translate(${mouseX}px, ${mouseY}px) scale(1)`;
+                    cursor.style.background = 'var(--primary)';
+                    follower.style.transform = `translate(${mouseX}px, ${mouseY}px) scale(1)`;
+                    follower.style.borderColor = 'var(--primary-glow)';
+                }
+            });
+            
+            if ('ontouchstart' in window || navigator.maxTouchPoints) {
+                cursor.style.display = 'none';
+                follower.style.display = 'none';
+            }
+            
+            animateCursor();
+        }
+
+        // Optimized live time update
+        function updateLiveTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            const liveTimeElement = document.getElementById('liveTime');
+            if (liveTimeElement) {
+                liveTimeElement.innerHTML = `
+                    <i class="fas fa-clock"></i>
+                    <span>${timeString}</span>
+                `;
+            }
+        }
+
+        // Optimized calendar generation
+        function generateCalendar(month, year) {
+            const calendarGrid = document.getElementById('calendarGrid');
+            if (!calendarGrid) return;
+            
+            requestAnimationFrame(() => {
+                calendarGrid.innerHTML = '';
+                
+                const monthNames = [
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
+                const monthYearElement = document.getElementById('monthYear');
+                if (monthYearElement) {
+                    monthYearElement.textContent = `${monthNames[month]} ${year}`;
+                }
+                
+                updateSelectedDateInfo();
+                
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const daysInPrevMonth = new Date(year, month, 0).getDate();
+                
+                const fragment = document.createDocumentFragment();
+                
+                for (let i = 0; i < firstDay; i++) {
+                    const day = daysInPrevMonth - firstDay + i + 1;
+                    const date = new Date(year, month - 1, day);
+                    fragment.appendChild(createDayElement(day, date, false));
+                }
+                
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const date = new Date(year, month, i);
+                    const isToday = date.toDateString() === currentDate.toDateString();
+                    const isHoliday = isHolidayDate(date);
+                    fragment.appendChild(createDayElement(i, date, true, isToday, isHoliday));
+                }
+                
+                const totalCells = 42;
+                const daysSoFar = firstDay + daysInMonth;
+                const daysToAdd = totalCells - daysSoFar;
+                
+                for (let i = 1; i <= daysToAdd; i++) {
+                    const date = new Date(year, month + 1, i);
+                    fragment.appendChild(createDayElement(i, date, false));
+                }
+                
+                calendarGrid.appendChild(fragment);
+            });
+        }
+
+        // Optimized day element creation
+        function createDayElement(day, date, isCurrentMonth, isToday = false, isHoliday = false) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'day will-change';
+            
+            if (isCurrentMonth) {
+                dayElement.classList.add('current-month');
+            } else {
+                dayElement.classList.add('other-month');
+            }
+            
+            if (isToday) {
+                dayElement.classList.add('today');
+            }
+            
+            if (isHoliday) {
+                dayElement.classList.add('holiday');
+            }
+            
+            if (date.toDateString() === selectedDate.toDateString()) {
+                dayElement.classList.add('selected');
+            }
+            
+            const banglaDate = getBengaliDate(date);
+            
+            dayElement.innerHTML = `
+                <div class="date-number">${day}</div>
+                <div class="bangla-date">${banglaDate}</div>
+                ${isHoliday ? '<div class="holiday-indicator"></div>' : ''}
+            `;
+            
+            dayElement.addEventListener('click', (e) => {
+                document.querySelectorAll('.day.selected').forEach(d => {
+                    d.classList.remove('selected');
+                });
+                
+                selectedDate = new Date(date);
+                dayElement.classList.add('selected');
+                generateCalendar(currentMonth, currentYear);
+            });
+            
+            return dayElement;
+        }
+
+        // Optimized holiday date check
+        function isHolidayDate(date) {
+            const dateString = date.toISOString().split('T')[0];
+            return holidays2026.some(holiday => holiday.date === dateString);
+        }
+
+        // Get Bengali date
+        function getBengaliDate(englishDate) {
+            const day = englishDate.getDate();
+            const month = englishDate.getMonth();
+            const year = englishDate.getFullYear();
+            
+            const banglaNumbers = ["১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯", "১০",
+                                  "১১", "১২", "১৩", "১৪", "১৫", "১৬", "১৭", "১৮", "১৯", "২০",
+                                  "২১", "২২", "২৩", "২৪", "২৫", "২৬", "২৭", "২৮", "২৯", "৩০", "৩১"];
+            
+            if (year === 2026 && month === 0 && day === 20) {
+                return "৬ মাঘ";
+            }
+            
+            let banglaDay = day - 1;
+            if (banglaDay < 0 || banglaDay >= banglaNumbers.length) banglaDay = 0;
+            
+            return banglaNumbers[banglaDay];
+        }
+
+        // Optimized date info update
+        function updateSelectedDateInfo() {
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            
+            const dayNames = [
+                "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+            ];
+            
+            const updates = [
+                { id: 'selectedDay', value: selectedDate.getDate() },
+                { id: 'selectedMonth', value: monthNames[selectedDate.getMonth()] },
+                { id: 'selectedYear', value: selectedDate.getFullYear() },
+                { id: 'dayOfWeek', value: dayNames[selectedDate.getDay()] },
+                { id: 'daysInMonth', value: new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() }
+            ];
+            
+            updates.forEach(({ id, value }) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
+            });
+            
+            const firstDayOfYear = new Date(selectedDate.getFullYear(), 0, 1);
+            const days = Math.floor((selectedDate - firstDayOfYear) / (24 * 60 * 60 * 1000));
+            const weekNumber = Math.ceil((days + firstDayOfYear.getDay() + 1) / 7);
+            const weekElement = document.getElementById('weekNumber');
+            if (weekElement) weekElement.textContent = weekNumber;
+            
+            const banglaDateElement = document.getElementById('banglaDate');
+            if (banglaDateElement) {
+                if (selectedDate.getFullYear() === 2026 && 
+                    selectedDate.getMonth() === 0 && 
+                    selectedDate.getDate() === 20) {
+                    banglaDateElement.textContent = "৬ মাঘ ১৪৩২";
+                } else {
+                    const banglaDate = getBengaliDate(selectedDate);
+                    const banglaMonths = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", 
+                                         "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
+                    let banglaMonthIndex = selectedDate.getMonth() - 3;
+                    if (banglaMonthIndex < 0) banglaMonthIndex += 12;
+                    
+                    banglaDateElement.textContent = 
+                        `${banglaDate} ${banglaMonths[banglaMonthIndex]} ১৪৩২`;
+                }
+            }
+        }
+
+        // Optimized holidays display
+        function displayHolidays() {
+            const holidaysList = document.getElementById('holidaysList');
+            if (!holidaysList) return;
+            
+            const fragment = document.createDocumentFragment();
+            
+            holidays2026.forEach((holiday, index) => {
+                const date = new Date(holiday.date);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                });
+                
+                const holidayItem = document.createElement('div');
+                holidayItem.className = 'holiday-item will-change';
+                holidayItem.style.opacity = '0';
+                holidayItem.style.transform = 'translateX(20px)';
+                
+                holidayItem.innerHTML = `
+                    <div class="holiday-date">${formattedDate}</div>
+                    <div class="holiday-name">${holiday.name}</div>
+                `;
+                
+                fragment.appendChild(holidayItem);
+                
+                setTimeout(() => {
+                    holidayItem.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    holidayItem.style.opacity = '1';
+                    holidayItem.style.transform = 'translateX(0)';
+                }, index * 80);
+            });
+            
+            holidaysList.appendChild(fragment);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            initCursor();
+            updateLiveTime();
+            const timeInterval = setInterval(updateLiveTime, 1000);
+            generateCalendar(currentMonth, currentYear);
+            displayHolidays();
+            
+            let navTimeout;
+            function handleNavigation(direction) {
+                clearTimeout(navTimeout);
+                navTimeout = setTimeout(() => {
+                    if (direction === 'prev') {
+                        currentMonth--;
+                        if (currentMonth < 0) {
+                            currentMonth = 11;
+                            currentYear--;
+                        }
+                    } else if (direction === 'next') {
+                        currentMonth++;
+                        if (currentMonth > 11) {
+                            currentMonth = 0;
+                            currentYear++;
+                        }
+                    } else if (direction === 'today') {
+                        currentDate = new Date(2026, 0, 20);
+                        selectedDate = new Date(currentDate);
+                        currentMonth = currentDate.getMonth();
+                        currentYear = currentDate.getFullYear();
+                    }
+                    generateCalendar(currentMonth, currentYear);
+                }, 150);
+            }
+            
+            document.getElementById('prevMonth').addEventListener('click', () => handleNavigation('prev'));
+            document.getElementById('nextMonth').addEventListener('click', () => handleNavigation('next'));
+            document.getElementById('todayBtn').addEventListener('click', () => handleNavigation('today'));
+            
+            // Mobile touch improvements
+            if ('ontouchstart' in window) {
+                document.documentElement.style.cursor = 'pointer';
+                
+                // Prevent zoom on double tap
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function(event) {
+                    const now = (new Date()).getTime();
+                    if (now - lastTouchEnd <= 300) {
+                        event.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, false);
+            }
+            
+            window.addEventListener('beforeunload', () => {
+                clearInterval(timeInterval);
+            });
+        });
+
+        // Responsive particle regeneration
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const bg = document.getElementById('animatedBg');
+                if (bg) {
+                    bg.innerHTML = '';
+                    createParticles();
+                }
+            }, 250);
+        });
+    </script>
+</body>
+</html>
