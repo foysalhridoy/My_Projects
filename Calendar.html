@@ -1139,11 +1139,11 @@
                 </div>
                 <div class="logo-text">
                     <h1>Daily</h1>
-                    <p>2026 Calendar</p>
+                    <p id="currentYear">Calendar</p>
                 </div>
             </div>
             <div class="current-date-display">
-                <div class="date" id="currentDate">January 20, 2026</div>
+                <div class="date" id="currentDate">Loading...</div>
                 <div class="live-time" id="liveTime">
                     <i class="fas fa-clock"></i>
                     <span>Loading time...</span>
@@ -1156,34 +1156,34 @@
             <!-- Calendar Container (Left) -->
             <div class="calendar-container will-change">
                 <div class="selected-date-box">
-                    <div class="selected-day" id="selectedDay">20</div>
-                    <div class="selected-month" id="selectedMonth">January</div>
-                    <div class="selected-year" id="selectedYear">2026</div>
+                    <div class="selected-day" id="selectedDay">--</div>
+                    <div class="selected-month" id="selectedMonth">--</div>
+                    <div class="selected-year" id="selectedYear">--</div>
                     
                     <div class="date-info">
                         <div class="date-info-item">
                             <span class="date-info-label">
                                 <i class="fas fa-calendar-day"></i> Day of Week
                             </span>
-                            <span class="date-info-value" id="dayOfWeek">Tuesday</span>
+                            <span class="date-info-value" id="dayOfWeek">--</span>
                         </div>
                         <div class="date-info-item">
                             <span class="date-info-label">
                                 <i class="fas fa-calendar-week"></i> Week Number
                             </span>
-                            <span class="date-info-value" id="weekNumber">4</span>
+                            <span class="date-info-value" id="weekNumber">--</span>
                         </div>
                         <div class="date-info-item">
                             <span class="date-info-label">
                                 <i class="fas fa-calendar-alt"></i> Days in Month
                             </span>
-                            <span class="date-info-value" id="daysInMonth">31</span>
+                            <span class="date-info-value" id="daysInMonth">--</span>
                         </div>
                         <div class="date-info-item">
                             <span class="date-info-label">
                                 <i class="fas fa-language"></i> Bengali Date
                             </span>
-                            <span class="date-info-value bangla-value" id="banglaDate">৬ মাঘ ১৪৩২</span>
+                            <span class="date-info-value bangla-value" id="banglaDate">--</span>
                         </div>
                     </div>
                 </div>
@@ -1191,7 +1191,7 @@
                 <!-- Calendar -->
                 <div class="calendar">
                     <div class="calendar-header">
-                        <div class="month-year" id="monthYear">January 2026</div>
+                        <div class="month-year" id="monthYear">-- ----</div>
                         <div class="nav-buttons">
                             <button class="nav-btn" id="prevMonth">
                                 <i class="fas fa-chevron-left"></i>
@@ -1223,7 +1223,7 @@
 
             <!-- Holidays Sidebar (Right) -->
             <aside class="holidays-sidebar will-change">
-                <h2><i class="fas fa-fire"></i> Public Holidays 2026</h2>
+                <h2><i class="fas fa-fire"></i> Public Holidays <span id="holidayYear">2026</span></h2>
                 <div class="holidays-list" id="holidaysList">
                     <!-- Holidays will be populated by JavaScript -->
                 </div>
@@ -1232,28 +1232,36 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>© 2026 Daily. All rights reserved.</p>
+            <p>© <span id="footerYear">2026</span> Daily. All rights reserved.</p>
             <p>Crafted with <span class="heart">❤️</span> Hridoy</p>
         </footer>
     </div>
 
     <script>
-        // Today's date - January 20, 2026
-        let currentDate = new Date(2026, 0, 20);
+        // Current date automatically
+        let currentDate = new Date();
         let selectedDate = new Date(currentDate);
         let currentMonth = currentDate.getMonth();
         let currentYear = currentDate.getFullYear();
 
-        // Public holidays for Bangladesh 2026
-        const holidays2026 = [
-            { date: "2026-02-21", name: "Shaheed Day & International Mother Language Day" },
-            { date: "2026-03-26", name: "Independence Day" },
-            { date: "2026-04-14", name: "Bengali New Year (Pohela Boishakh)" },
-            { date: "2026-05-01", name: "May Day (International Workers' Day)" },
-            { date: "2026-08-05", name: "National Mourning Day" },
-            { date: "2026-12-16", name: "Victory Day" },
-            { date: "2026-12-25", name: "Christmas Day" }
+        // Public holidays for Bangladesh (updated for current year)
+        const holidays = [
+            { month: 1, day: 21, name: "Shaheed Day & International Mother Language Day" },
+            { month: 2, day: 26, name: "Independence Day" },
+            { month: 3, day: 14, name: "Bengali New Year (Pohela Boishakh)" },
+            { month: 4, day: 1, name: "May Day (International Workers' Day)" },
+            { month: 7, day: 5, name: "National Mourning Day" },
+            { month: 11, day: 16, name: "Victory Day" },
+            { month: 11, day: 25, name: "Christmas Day" }
         ];
+
+        // Update year in footer and holiday section
+        function updateYearDisplay() {
+            const currentYear = new Date().getFullYear();
+            document.getElementById('currentYear').textContent = `${currentYear} Calendar`;
+            document.getElementById('holidayYear').textContent = currentYear;
+            document.getElementById('footerYear').textContent = currentYear;
+        }
 
         // Optimized particle system
         function createParticles() {
@@ -1341,12 +1349,28 @@
             animateCursor();
         }
 
+        // Update current date display in header
+        function updateCurrentDateDisplay() {
+            const now = new Date();
+            const dateElement = document.getElementById('currentDate');
+            if (dateElement) {
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                dateElement.textContent = now.toLocaleDateString('en-US', options);
+            }
+        }
+
         // Optimized live time update
         function updateLiveTime() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
+                second: '2-digit',
                 hour12: true
             });
             
@@ -1456,8 +1480,13 @@
 
         // Optimized holiday date check
         function isHolidayDate(date) {
-            const dateString = date.toISOString().split('T')[0];
-            return holidays2026.some(holiday => holiday.date === dateString);
+            const currentYear = date.getFullYear();
+            const month = date.getMonth();
+            const day = date.getDate();
+            
+            return holidays.some(holiday => 
+                holiday.month === month && holiday.day === day
+            );
         }
 
         // Get Bengali date
@@ -1470,12 +1499,18 @@
                                   "১১", "১২", "১৩", "১৪", "১৫", "১৬", "১৭", "১৮", "১৯", "২০",
                                   "২১", "২২", "২৩", "২৪", "২৫", "২৬", "২৭", "২৮", "২৯", "৩০", "৩১"];
             
-            if (year === 2026 && month === 0 && day === 20) {
-                return "৬ মাঘ";
-            }
-            
             let banglaDay = day - 1;
             if (banglaDay < 0 || banglaDay >= banglaNumbers.length) banglaDay = 0;
+            
+            const banglaMonths = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", 
+                                 "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
+            
+            let banglaMonthIndex = month - 3;
+            if (banglaMonthIndex < 0) banglaMonthIndex += 12;
+            
+            if (banglaMonthIndex >= 0 && banglaMonthIndex < banglaMonths.length) {
+                return `${banglaNumbers[banglaDay]} ${banglaMonths[banglaMonthIndex]}`;
+            }
             
             return banglaNumbers[banglaDay];
         }
@@ -1512,19 +1547,18 @@
             
             const banglaDateElement = document.getElementById('banglaDate');
             if (banglaDateElement) {
-                if (selectedDate.getFullYear() === 2026 && 
-                    selectedDate.getMonth() === 0 && 
-                    selectedDate.getDate() === 20) {
-                    banglaDateElement.textContent = "৬ মাঘ ১৪৩২";
-                } else {
-                    const banglaDate = getBengaliDate(selectedDate);
-                    const banglaMonths = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", 
-                                         "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
-                    let banglaMonthIndex = selectedDate.getMonth() - 3;
-                    if (banglaMonthIndex < 0) banglaMonthIndex += 12;
-                    
+                const banglaDate = getBengaliDate(selectedDate);
+                const banglaMonths = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", 
+                                     "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
+                let banglaMonthIndex = selectedDate.getMonth() - 3;
+                if (banglaMonthIndex < 0) banglaMonthIndex += 12;
+                
+                if (banglaMonthIndex >= 0 && banglaMonthIndex < banglaMonths.length) {
+                    const banglaYear = 1432 + (selectedDate.getFullYear() - 2025);
                     banglaDateElement.textContent = 
-                        `${banglaDate} ${banglaMonths[banglaMonthIndex]} ১৪৩২`;
+                        `${banglaDate} ${banglaYear}`;
+                } else {
+                    banglaDateElement.textContent = banglaDate;
                 }
             }
         }
@@ -1534,10 +1568,11 @@
             const holidaysList = document.getElementById('holidaysList');
             if (!holidaysList) return;
             
+            const currentYear = new Date().getFullYear();
             const fragment = document.createDocumentFragment();
             
-            holidays2026.forEach((holiday, index) => {
-                const date = new Date(holiday.date);
+            holidays.forEach((holiday, index) => {
+                const date = new Date(currentYear, holiday.month, holiday.day);
                 const formattedDate = date.toLocaleDateString('en-US', { 
                     month: 'short', 
                     day: 'numeric', 
@@ -1568,6 +1603,8 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            updateYearDisplay();
+            updateCurrentDateDisplay();
             createParticles();
             initCursor();
             updateLiveTime();
@@ -1592,10 +1629,11 @@
                             currentYear++;
                         }
                     } else if (direction === 'today') {
-                        currentDate = new Date(2026, 0, 20);
+                        currentDate = new Date();
                         selectedDate = new Date(currentDate);
                         currentMonth = currentDate.getMonth();
                         currentYear = currentDate.getFullYear();
+                        updateCurrentDateDisplay();
                     }
                     generateCalendar(currentMonth, currentYear);
                 }, 150);
