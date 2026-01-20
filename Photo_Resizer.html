@@ -713,6 +713,53 @@
             box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
         }
 
+        /* File Size Selection */
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .size-btn {
+            padding: 14px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-primary);
+            text-align: center;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .size-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .size-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .size-label {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .size-type {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
         /* Preview Section */
         .preview-section {
             padding: 2.5rem;
@@ -1136,6 +1183,36 @@
                 </div>
                 
                 <div style="margin-bottom: 2rem;">
+                    <div class="slider-label">Target File Size</div>
+                    <div class="size-grid">
+                        <button class="size-btn" data-size="50">
+                            <span class="size-label">50</span>
+                            <span class="size-type">KB</span>
+                        </button>
+                        <button class="size-btn" data-size="100">
+                            <span class="size-label">100</span>
+                            <span class="size-type">KB</span>
+                        </button>
+                        <button class="size-btn" data-size="250">
+                            <span class="size-label">250</span>
+                            <span class="size-type">KB</span>
+                        </button>
+                        <button class="size-btn" data-size="500">
+                            <span class="size-label">500</span>
+                            <span class="size-type">KB</span>
+                        </button>
+                        <button class="size-btn active" data-size="1000">
+                            <span class="size-label">1</span>
+                            <span class="size-type">MB</span>
+                        </button>
+                        <button class="size-btn" data-size="2000">
+                            <span class="size-label">2</span>
+                            <span class="size-type">MB</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
                     <div class="slider-label">Quick Presets</div>
                     <div class="preset-grid">
                         <button class="preset-btn" data-width="1080" data-height="1080">Instagram</button>
@@ -1241,6 +1318,7 @@
         const fileNameInput = document.getElementById('fileNameInput');
         const presetButtons = document.querySelectorAll('.preset-btn');
         const formatButtons = document.querySelectorAll('.format-btn');
+        const sizeButtons = document.querySelectorAll('.size-btn');
         
         // State variables
         let originalImage = null;
@@ -1252,6 +1330,7 @@
         let originalHeight = 0;
         let isLockedMode = true;
         let selectedFormat = 'original';
+        let targetFileSize = 1000; // Default 1MB in KB
         let mouseX = 0, mouseY = 0;
         let trailX = 0, trailY = 0;
 
@@ -1345,9 +1424,13 @@
             });
         });
 
-        // Upload Events
+        // FIXED: Upload Events - Problem solved
+        uploadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        });
+        
         uploadCard.addEventListener('click', () => fileInput.click());
-        uploadBtn.addEventListener('click', () => fileInput.click());
         
         uploadCard.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -1485,6 +1568,117 @@
             if (originalImage) resizeImage();
         });
 
+        // File Size Buttons
+        sizeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active state
+                sizeButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Add click animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+                
+                // Set target file size
+                targetFileSize = parseInt(this.dataset.size);
+                
+                // Adjust quality to match target size
+                if (originalImage) {
+                    adjustQualityForTargetSize();
+                }
+            });
+        });
+
+        // Adjust Quality for Target File Size
+        function adjustQualityForTargetSize() {
+            if (!originalImage) return;
+            
+            // Show loading state
+            const originalText = resizeBtn.innerHTML;
+            resizeBtn.innerHTML = '<div class="loading-spinner"></div><span>Adjusting Quality...</span>';
+            resizeBtn.disabled = true;
+            
+            // Get current dimensions
+            const targetWidth = parseInt(widthInput.value);
+            const targetHeight = parseInt(heightInput.value);
+            
+            // Binary search for optimal quality
+            let low = 10;
+            let high = 100;
+            let bestQuality = qualitySlider.value;
+            let bestSizeDiff = Infinity;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext('2d');
+            
+            // Enable image smoothing
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // Draw resized image
+            ctx.drawImage(originalImage, 0, 0, targetWidth, targetHeight);
+            
+            // Get format
+            let mimeType = 'image/jpeg';
+            if (selectedFormat === 'png') {
+                mimeType = 'image/png';
+            } else if (selectedFormat === 'webp') {
+                mimeType = 'image/webp';
+            } else if (selectedFormat === 'original') {
+                if (originalFileName.toLowerCase().endsWith('.png')) {
+                    mimeType = 'image/png';
+                } else if (originalFileName.toLowerCase().endsWith('.webp')) {
+                    mimeType = 'image/webp';
+                }
+            }
+            
+            // Binary search for optimal quality
+            for (let i = 0; i < 8; i++) {
+                const mid = Math.floor((low + high) / 2);
+                const quality = mid / 100;
+                
+                let dataURL;
+                if (mimeType === 'image/png') {
+                    dataURL = canvas.toDataURL(mimeType);
+                } else {
+                    dataURL = canvas.toDataURL(mimeType, quality);
+                }
+                
+                const size = calculateImageSize(dataURL);
+                const sizeKB = size / 1024;
+                const diff = Math.abs(sizeKB - targetFileSize);
+                
+                if (diff < bestSizeDiff) {
+                    bestSizeDiff = diff;
+                    bestQuality = mid;
+                }
+                
+                if (sizeKB > targetFileSize) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            
+            // Update quality slider
+            qualitySlider.value = bestQuality;
+            qualityValue.textContent = `${bestQuality}%`;
+            
+            // Restore button state
+            resizeBtn.innerHTML = originalText;
+            resizeBtn.disabled = false;
+            
+            // Resize image with new quality
+            resizeImage();
+            
+            // Show notification
+            showNotification(`Quality adjusted for ~${targetFileSize}KB target size`, 'success');
+        }
+
         // Preset Buttons
         presetButtons.forEach(btn => {
             btn.addEventListener('click', function() {
@@ -1508,8 +1702,12 @@
                 // Update scale slider
                 updateScaleSlider();
                 
-                // Resize image
-                if (originalImage) resizeImage();
+                // Adjust quality for target size
+                if (originalImage) {
+                    adjustQualityForTargetSize();
+                } else {
+                    if (originalImage) resizeImage();
+                }
             });
         });
 
@@ -1591,6 +1789,11 @@
             formatButtons.forEach(b => b.classList.remove('active'));
             document.querySelector('.format-btn[data-format="original"]').classList.add('active');
             selectedFormat = 'original';
+            
+            // Reset file size
+            sizeButtons.forEach(b => b.classList.remove('active'));
+            document.querySelector('.size-btn[data-size="1000"]').classList.add('active');
+            targetFileSize = 1000;
             
             // Reset presets
             presetButtons.forEach(b => b.classList.remove('active'));
@@ -1781,7 +1984,7 @@
             fileNameInput.value = 'resized-image';
             
             // Add ripple effect to buttons
-            document.querySelectorAll('.btn, .preset-btn, .format-btn, .mode-option, .upload-btn').forEach(btn => {
+            document.querySelectorAll('.btn, .preset-btn, .format-btn, .mode-option, .upload-btn, .size-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     const ripple = document.createElement('span');
                     const rect = this.getBoundingClientRect();
